@@ -1,15 +1,16 @@
-import { ChangeEvent, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { PopulationContext } from '../../contexts/PopulationContext';
 import { ResasLogic } from '../../libs/logic/ResasLogic';
 import { Prefecture } from '../../model/Prefecture';
+import { List, ListItem, ListTitle, PrefectureContainer } from './styles';
 
 /**
  * 都道府県一覧表示コンポーネント
  *
  * @constructor
  */
-export const Prefectures = () => {
+export const PrefectureList = () => {
   const { state: populationState, dispatch: populationDispatch } = useContext(PopulationContext);
   const [prefectures, setPrefectures] = useState<Prefecture[]>([]);
 
@@ -34,6 +35,7 @@ export const Prefectures = () => {
       if (response.message) {
         populationDispatch({ type: 'get_population_composition_failure', 'error': response.message });
       } else {
+        response.result.prefName = prefecture.prefName;
         populationDispatch({
           type: 'get_population_composition_success',
           prefCode: prefecture.prefCode,
@@ -46,17 +48,19 @@ export const Prefectures = () => {
   const prefectureList = useMemo(() => {
     const list = prefectures.map((prefecture) => {
       return (
-        <label key={`prefecture_${prefecture.prefCode}`}>
-          <input
-            type={'checkbox'}
-            id={`prefecture_${prefecture.prefCode}`}
-            name={`prefecture_${prefecture.prefCode}`}
-            value={prefecture.prefCode}
-            onChange={(e) => onPrefectureClick(prefecture)}
-            checked={populationState.populationCompositions.has(prefecture.prefCode)}
-          />
-          {prefecture.prefName}
-        </label>
+        <ListItem key={`prefecture_${prefecture.prefCode}`}>
+          <label>
+            <input
+              type={'checkbox'}
+              id={`prefecture_${prefecture.prefCode}`}
+              name={`prefecture_${prefecture.prefCode}`}
+              value={prefecture.prefCode}
+              onChange={(e) => onPrefectureClick(prefecture)}
+              checked={populationState.populationCompositions.has(prefecture.prefCode)}
+            />
+            {prefecture.prefName}
+          </label>
+        </ListItem>
       );
     });
 
@@ -64,10 +68,11 @@ export const Prefectures = () => {
   }, [prefectures, populationState]);
 
   return (
-    <div>
-      <ul>
+    <PrefectureContainer>
+      <ListTitle>都道府県</ListTitle>
+      <List>
         {prefectureList}
-      </ul>
-    </div>
+      </List>
+    </PrefectureContainer>
   );
 };

@@ -8,7 +8,22 @@ import api from './aspida/$api';
  * RESASのAPIをコールするロジッククラス
  */
 export class ResasLogic {
-  private readonly $apiKey = process.env.REACT_APP_RESAS_API_KEY ? process.env.REACT_APP_RESAS_API_KEY : '';
+  private readonly apiKey = process.env.REACT_APP_RESAS_API_KEY ? process.env.REACT_APP_RESAS_API_KEY : '';
+
+  private readonly chartLineColor: { [prefCode: number]: string } = {
+    1: '#273AA8',
+    2: '#6E83FF',
+    3: '',
+    4: '',
+    5: '',
+    6: '',
+    7: '',
+    8: '',
+    9: '',
+    10: '',
+    47: '#0000ff',
+  };
+
 
   /**
    * 都道府県一覧取得APIをコールする
@@ -17,7 +32,7 @@ export class ResasLogic {
     const client = api(aspida());
     const apiResponse = await client.api.v1.prefectures.$get({
       headers: {
-        'X-API-KEY': this.$apiKey
+        'X-API-KEY': this.apiKey
       }
     });
 
@@ -37,7 +52,7 @@ export class ResasLogic {
         cityCode: '-'
       },
       headers: {
-        'X-API-KEY': this.$apiKey
+        'X-API-KEY': this.apiKey
       }
     });
 
@@ -66,5 +81,11 @@ export class ResasLogic {
     });
 
     return chartDataList.filter(Boolean);
+  };
+
+  public generateLineColor = () => {
+    const color = (Math.random() * 0xFFFFFF | 0).toString(16);
+
+    return  '#' + ('000000' + color).slice(-6);
   };
 }

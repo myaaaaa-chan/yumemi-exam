@@ -1,4 +1,5 @@
 export interface PopulationComposition {
+  prefName: string;
   boundaryYear: number;
   data: [
     {

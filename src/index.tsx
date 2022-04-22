@@ -8,6 +8,9 @@ import reportWebVitals from './reportWebVitals';
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
+  body {
+    font-family: 'M PLUS 1p;
+  }
 `;
 
 const root = ReactDOM.createRoot(

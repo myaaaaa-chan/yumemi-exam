@@ -1,9 +1,10 @@
 import { useContext } from 'react';
-import { CartesianGrid, Label, Line, LineChart, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Label, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 import { PopulationContext } from '../../contexts/PopulationContext';
 import { ResasLogic } from '../../libs/logic/ResasLogic';
 import { ChartData } from '../../model/Chart';
+import { ChartContainer } from './styles';
 
 /**
  * 人口推移グラフビュー
@@ -15,26 +16,42 @@ export const PopulationChart = () => {
 
   const lines: JSX.Element[] = [];
   let chartDataList: ChartData[] = [];
-  if (state.populationCompositions) {
+  if (state.populationCompositions.size > 0) {
     const logic = new ResasLogic();
     chartDataList = logic.buildChartData(state.populationCompositions);
     state.populationCompositions.forEach((cpByPref, prefCode) => {
-      lines.push(<Line key={`population${prefCode}`} dataKey={`population${prefCode}`} type="monotone" />);
+      lines.push(
+        <Line
+          key={`population${prefCode}`}
+          name={cpByPref.prefName}
+          dataKey={`population${prefCode}`}
+          type="monotone"
+          stroke={logic.generateLineColor()}
+        />
+      );
     });
   }
 
-  return (
-    <div>
-      <LineChart width={600} height={300} data={chartDataList} margin={{ top: 20, right: 50, bottom: 50, left: 50 }}>
-        {lines}
-        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-        <XAxis dataKey="year">
-          <Label value="年度" offset={0} position="right" />
-        </XAxis>
-        <YAxis>
-          <Label value="人口数" position="top"  />
-        </YAxis>
-      </LineChart>
-    </div>
-  );
+  if (state.populationCompositions.size > 0) {
+    console.log('Render chart');
+    return (
+      <ChartContainer>
+        <ResponsiveContainer width="80%" height={400}>
+          <LineChart data={chartDataList}>
+            {lines}
+            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+            <XAxis dataKey="year">
+              <Label value="年度" position="insideBottomRight" />
+            </XAxis>
+            <YAxis width={80}>
+              <Label value="人口数" position="insideTop" />
+            </YAxis>
+            <Legend layout={'vertical'} verticalAlign={'middle'} align={'right'}  />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+    );
+  } else {
+    return <></>;
+  }
 };
